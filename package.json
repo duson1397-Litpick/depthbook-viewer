@@ -9,9 +9,12 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "epubjs": "^0.3.93",
     "next": "16.1.6",
+    "pdfjs-dist": "^4.0.379",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-reader": "^2.0.15"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
