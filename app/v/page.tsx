@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, Suspense } from "react";
 
 type VerifyOk = {
   ok: true;
@@ -54,7 +54,7 @@ function TocEntry({
   );
 }
 
-export default function VPage() {
+function VPageContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token") ?? "";
 
@@ -763,5 +763,13 @@ export default function VPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function VPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Loading...</div>}>
+      <VPageContent />
+    </Suspense>
   );
 }
