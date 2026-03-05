@@ -563,6 +563,12 @@ function VPageContent() {
               <button
                 type="button"
                 onClick={async () => {
+                  const text = selectionPopup.selectedText?.trim();
+                  if (!text) {
+                    setSelectionPopup(null);
+                    return;
+                  }
+                  
                   if (selectionPopup.cfiRange) {
                     renditionRef.current?.addAnnotation(selectionPopup.cfiRange);
                   }
@@ -575,7 +581,7 @@ function VPageContent() {
                         type: "good",
                         cfi_range: selectionPopup.cfiRange,
                         chapter: String(chapterIndex),
-                        selected_text: selectionPopup.selectedText,
+                        selected_text: text,
                       }),
                     });
                   } catch {
