@@ -79,6 +79,7 @@ function VPageContent() {
   } | null>(null);
   const [chapterIndex, setChapterIndex] = useState(0);
   const [totalChapters, setTotalChapters] = useState(0);
+  const [readingProgress, setReadingProgress] = useState(0);
   const [tocOpen, setTocOpen] = useState(false);
   const [epubFontScale, setEpubFontScale] = useState(100);
   const [selectionPopup, setSelectionPopup] = useState<{
@@ -275,19 +276,21 @@ function VPageContent() {
           selectedCfiRef.current = cfiRange ?? "";
           setSelectionPopup((prev) => (prev ? { ...prev, cfiRange: selectedCfiRef.current } : null));
         });
-        rendition.on("relocated", (location: { start?: { index?: number } }) => {
+        rendition.on("relocated", (location: { start?: { index?: number; percentage?: number } }) => {
           if (!mounted) return;
           const index = location?.start?.index;
           const len = bookRef.current?.spine?.items?.length;
+          const percentage = location?.start?.percentage;
+          
           if (typeof index === "number") {
             setChapterIndex(index + 1);
           }
           if (typeof len === "number") {
             setTotalChapters(len);
           }
-          if (typeof index === "number" && typeof len === "number" && len > 1) {
-            const pct = index / (len - 1);
-            if (!surveyShownRef.current && pct >= 0.85) {
+          if (typeof percentage === "number") {
+            setReadingProgress(Math.round(percentage * 100));
+            if (!surveyShownRef.current && percentage >= 0.85) {
               surveyShownRef.current = true;
               setSurveyModalOpen(true);
             }
@@ -431,16 +434,16 @@ function VPageContent() {
 
   return (
     <div className="relative flex min-h-screen flex-col bg-neutral-200">
-      <header className="flex h-14 shrink-0 items-center justify-between border-b border-neutral-200 bg-white px-4">
-        <h1 className="max-w-[200px] truncate text-sm font-semibold text-neutral-800">
+      <header className="flex h-16 shrink-0 items-center justify-between border-b border-neutral-200 bg-white px-5 shadow-sm">
+        <h1 className="max-w-[220px] truncate text-base font-semibold text-neutral-800">
           {verifyData.title}
         </h1>
         {verifyData.file_type === "epub" && (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => renditionRef.current?.prev()}
-              className="flex h-8 w-8 min-w-[32px] items-center justify-center rounded-md bg-neutral-100 px-0 text-sm font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95"
+              className="flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-100 text-base font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95"
               aria-label="이전 페이지"
             >
               ◀
@@ -448,19 +451,19 @@ function VPageContent() {
             <button
               type="button"
               onClick={() => renditionRef.current?.next()}
-              className="flex h-8 w-8 min-w-[32px] items-center justify-center rounded-md bg-neutral-100 px-0 text-sm font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95"
+              className="flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-100 text-base font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95"
               aria-label="다음 페이지"
             >
               ▶
             </button>
-            <span className="min-w-[52px] text-center text-sm tabular-nums text-neutral-400">
-              {chapterIndex} / {totalChapters}
+            <span className="min-w-[60px] text-center text-sm tabular-nums text-neutral-500">
+              {readingProgress}%
             </span>
-            <div className="h-5 w-px bg-neutral-200" aria-hidden />
+            <div className="h-6 w-px bg-neutral-200" aria-hidden />
             <button
               type="button"
               onClick={() => setTocOpen((o) => !o)}
-              className="flex h-8 min-w-[32px] items-center justify-center rounded-md bg-neutral-100 px-3 text-sm font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95"
+              className="flex h-10 items-center justify-center rounded-lg bg-neutral-100 px-4 text-sm font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95"
             >
               목차
             </button>
@@ -474,7 +477,7 @@ function VPageContent() {
                 renditionRef.current?.themes.fontSize(`${newVal}%`);
               }}
               disabled={epubFontScale <= FONT_SCALE_STEPS[0]}
-              className="flex h-8 min-w-[32px] items-center justify-center rounded-md bg-neutral-100 px-3 text-sm font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95 disabled:active:scale-100 disabled:opacity-50 disabled:hover:bg-neutral-100"
+              className="flex h-10 items-center justify-center rounded-lg bg-neutral-100 px-4 text-sm font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95 disabled:active:scale-100 disabled:opacity-50 disabled:hover:bg-neutral-100"
             >
               A-
             </button>
@@ -488,7 +491,7 @@ function VPageContent() {
                 renditionRef.current?.themes.fontSize(`${newVal}%`);
               }}
               disabled={epubFontScale >= FONT_SCALE_STEPS[FONT_SCALE_STEPS.length - 1]}
-              className="flex h-8 min-w-[32px] items-center justify-center rounded-md bg-neutral-100 px-3 text-sm font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95 disabled:active:scale-100 disabled:opacity-50 disabled:hover:bg-neutral-100"
+              className="flex h-10 items-center justify-center rounded-lg bg-neutral-100 px-4 text-sm font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95 disabled:active:scale-100 disabled:opacity-50 disabled:hover:bg-neutral-100"
             >
               A+
             </button>
@@ -589,7 +592,7 @@ function VPageContent() {
             <canvas ref={pdfCanvasRef} className="shadow-lg" style={{ maxWidth: "100%" }} />
           </div>
         ) : (
-          <div className="relative h-[calc(100vh-56px)] w-full">
+          <div className="relative h-[calc(100vh-64px)] w-full">
             <div
               ref={containerRef}
               id="epub-container"
@@ -597,7 +600,7 @@ function VPageContent() {
               style={{
                 position: "relative",
                 width: "100%",
-                height: "calc(100vh - 56px)",
+                height: "calc(100vh - 64px)",
                 overflow: "hidden",
                 zIndex: 1,
               }}
@@ -647,7 +650,7 @@ function VPageContent() {
       </main>
 
       {verifyData.file_type === "epub" && tocOpen && (
-        <aside className="absolute right-0 top-14 z-10 max-h-[80vh] w-64 overflow-auto border border-neutral-300 bg-white p-2 shadow-lg">
+        <aside className="absolute right-0 top-16 z-10 max-h-[80vh] w-64 overflow-auto border border-neutral-300 bg-white p-2 shadow-lg">
           <div className="mb-2 flex items-center justify-between">
             <span className="text-sm font-medium text-neutral-700">목차</span>
             <button
