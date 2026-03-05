@@ -23,6 +23,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       headers: {
         Accept: "application/epub+zip,*/*",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        Referer: "https://depthbook.kr",
+        Origin: "https://depthbook.kr",
       },
     });
     console.log("epub-proxy: response status:", res.status, "content-type:", res.headers.get("content-type"));
@@ -39,10 +41,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const arrayBuffer = await res.arrayBuffer();
     console.log("epub-proxy: received arrayBuffer size:", arrayBuffer.byteLength);
     
-    if (arrayBuffer.byteLength < 100_000) {
+    if (arrayBuffer.byteLength < 1000) {
       console.error("epub-proxy: file too small", arrayBuffer.byteLength, "bytes");
       return NextResponse.json(
-        { error: "유효하지 않은 EPUB 파일", detail: `File size: ${arrayBuffer.byteLength} bytes (minimum 100KB required)` },
+        { error: "유효하지 않은 EPUB 파일", detail: `File size: ${arrayBuffer.byteLength} bytes (minimum 1KB required)` },
         { status: 500 }
       );
     }
