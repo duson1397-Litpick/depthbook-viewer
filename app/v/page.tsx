@@ -81,6 +81,7 @@ function VPageContent() {
   const [totalChapters, setTotalChapters] = useState(0);
   const [readingProgress, setReadingProgress] = useState(0);
   const [tocOpen, setTocOpen] = useState(false);
+  const isAtEndRef = useRef(false);
   const [epubFontScale, setEpubFontScale] = useState(100);
   const [selectionPopup, setSelectionPopup] = useState<{
     left: number;
@@ -276,11 +277,16 @@ function VPageContent() {
           selectedCfiRef.current = cfiRange ?? "";
           setSelectionPopup((prev) => (prev ? { ...prev, cfiRange: selectedCfiRef.current } : null));
         });
-        rendition.on("relocated", (location: { start?: { index?: number; percentage?: number } }) => {
+        rendition.on("relocated", (location: { start?: { index?: number; percentage?: number }; atEnd?: boolean }) => {
           if (!mounted) return;
           const index = location?.start?.index;
           const len = bookRef.current?.spine?.items?.length;
           const percentage = location?.start?.percentage;
+          const atEnd = location?.atEnd;
+          
+          if (typeof atEnd === "boolean") {
+            isAtEndRef.current = atEnd;
+          }
           
           if (typeof index === "number") {
             setChapterIndex(index + 1);
@@ -307,7 +313,13 @@ function VPageContent() {
           },
           next: () => {
             try {
+              const wasAtEnd = isAtEndRef.current;
               rendition.next();
+              // 마지막 페이지에서 next 호출 시 설문 모달 표시
+              if (wasAtEnd && !surveyShownRef.current) {
+                surveyShownRef.current = true;
+                setSurveyModalOpen(true);
+              }
             } catch {}
           },
           display: (href: string) => {
