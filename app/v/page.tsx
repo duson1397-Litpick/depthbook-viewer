@@ -18,7 +18,7 @@ type VerifyFail = { ok: false };
 
 type VerifyResponse = VerifyOk | VerifyFail;
 
-type ViewState = "loading" | "error" | "viewer";
+type ViewState = "loading" | "error" | "viewer" | "email_input" | "copyright_warning";
 
 const FONT_SCALE_STEPS = [80, 90, 100, 110, 120] as const;
 
@@ -61,6 +61,9 @@ function VPageContent() {
   const [viewState, setViewState] = useState<ViewState>("loading");
   const [verifyData, setVerifyData] = useState<VerifyOk | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [emailInput, setEmailInput] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [emailVerifying, setEmailVerifying] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const pdfCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -130,13 +133,60 @@ function VPageContent() {
         sequence_number: data.sequence_number,
         status: data.status,
       });
-      setViewState("viewer");
+      
+      // 이메일 인증 확인
+      if (typeof window !== "undefined") {
+        const verifiedEmail = sessionStorage.getItem("verified_email");
+        if (verifiedEmail) {
+          setViewState("viewer");
+        } else {
+          setViewState("email_input");
+        }
+      } else {
+        setViewState("email_input");
+      }
     } catch {
       setErrorMessage("인증 요청 중 오류가 발생했습니다.");
       console.error("setViewState error at:", new Error().stack);
       setViewState("error");
     }
   }, [token]);
+
+  const handleEmailVerify = useCallback(async () => {
+    const email = emailInput.trim().toLowerCase();
+    if (!email) {
+      setEmailError("이메일을 입력해주세요.");
+      return;
+    }
+    
+    setEmailVerifying(true);
+    setEmailError("");
+    
+    try {
+      const res = await fetch("/api/verify-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, email }),
+      });
+      
+      const data = await res.json();
+      
+      if (data.ok === "yes") {
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("verified_email", email);
+        }
+        setViewState("copyright_warning");
+      } else if (data.reason === "email_mismatch") {
+        setEmailError("초대받은 이메일과 일치하지 않습니다. 올바른 이메일을 입력해주세요.");
+      } else {
+        setEmailError("유효하지 않은 초대 링크입니다.");
+      }
+    } catch {
+      setEmailError("이메일 인증 중 오류가 발생했습니다.");
+    } finally {
+      setEmailVerifying(false);
+    }
+  }, [token, emailInput]);
 
   useEffect(() => {
     fetchVerify();
@@ -438,6 +488,65 @@ function VPageContent() {
         >
           다시 시도
         </button>
+      </div>
+    );
+  }
+
+  if (viewState === "email_input") {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4">
+        <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
+          <h2 className="mb-6 text-center text-xl font-semibold text-neutral-800">
+            이메일 인증
+          </h2>
+          <p className="mb-6 text-center text-sm text-neutral-600">
+            초대받은 이메일 주소를 입력해주세요
+          </p>
+          <div className="space-y-4">
+            <input
+              type="email"
+              value={emailInput}
+              onChange={(e) => setEmailInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && !emailVerifying && handleEmailVerify()}
+              placeholder="example@email.com"
+              disabled={emailVerifying}
+              className="w-full rounded-lg border border-neutral-300 px-4 py-3 text-sm placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-200 disabled:bg-neutral-100"
+            />
+            {emailError && (
+              <p className="text-sm text-red-600">{emailError}</p>
+            )}
+            <button
+              type="button"
+              onClick={handleEmailVerify}
+              disabled={emailVerifying}
+              className="w-full rounded-lg bg-neutral-800 py-3 text-sm font-medium text-white hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {emailVerifying ? "확인 중..." : "확인"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (viewState === "copyright_warning") {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+          <h2 className="mb-4 text-center text-xl font-semibold text-neutral-800">
+            저작권 안내
+          </h2>
+          <div className="mb-6 space-y-3 text-sm text-neutral-700">
+            <p>[저작권 경고 문구 placeholder]</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setViewState("viewer")}
+            className="w-full rounded-lg bg-neutral-800 py-2.5 text-sm font-medium text-white hover:bg-neutral-700"
+          >
+            확인
+          </button>
+        </div>
       </div>
     );
   }
