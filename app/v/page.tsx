@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, Suspense } from "react";
+import { normalizeEpubUrl } from "@/lib/normalizeEpubUrl";
 
 type VerifyOk = {
   ok: true;
@@ -253,7 +254,7 @@ function VPageContent() {
       return;
     }
 
-    const epubUrl = `${window.location.origin}/api/epub-proxy?url=${encodeURIComponent(verifyData.epub_path)}`;
+    const epubUrl = `${window.location.origin}/api/epub-proxy?url=${encodeURIComponent(normalizeEpubUrl(verifyData.epub_path))}`;
     console.log("epubUrl:", epubUrl, "epub_path:", verifyData.epub_path);
     let mounted = true;
     let mouseupCleanup: (() => void) | null = null;

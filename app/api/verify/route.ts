@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { normalizeEpubUrl } from "@/lib/normalizeEpubUrl";
 
 const BUBBLE_API_URL = process.env.BUBBLE_API_URL;
 const BUBBLE_API_TOKEN = process.env.BUBBLE_API_TOKEN;
@@ -45,12 +46,14 @@ export async function GET(request: NextRequest): Promise<NextResponse<VerifyResp
       return NextResponse.json({ ok: false } satisfies VerifyResponse);
     }
 
+    const rawEpubPath = d.epub_path === "temp" 
+      ? "https://www.gutenberg.org/cache/epub/1342/pg1342.epub" 
+      : (d.epub_path ?? "");
+    
     return NextResponse.json({
       ok: true,
       title: d.campaign_title ?? "",
-      epub_path: d.epub_path === "temp" 
-        ? "https://www.gutenberg.org/cache/epub/1342/pg1342.epub" 
-        : (d.epub_path ?? ""),
+      epub_path: normalizeEpubUrl(rawEpubPath),
       sequence_number: d.sequence_number ?? 0,
       status: d.status ?? "",
     } satisfies VerifyResponse);
