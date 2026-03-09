@@ -537,7 +537,9 @@ function VPageContent() {
             저작권 안내
           </h2>
           <div className="mb-6 space-y-3 text-sm text-neutral-700">
-            <p>[저작권 경고 문구 placeholder]</p>
+            <p>
+              이 파일은 출판 전 검토용으로만 제공됩니다. 무단 복제, 배포, 캡처를 금지합니다. 저작권법에 따라 법적 책임이 따를 수 있습니다.
+            </p>
           </div>
           <button
             type="button"
