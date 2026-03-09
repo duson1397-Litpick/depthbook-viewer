@@ -28,8 +28,13 @@ export async function POST(request: NextRequest): Promise<NextResponse<VerifyEma
       },
       body: JSON.stringify({ token, email }),
     });
-
+    //
+    console.log("bubble status:", res.status);
+    console.log("bubble url:", `${BUBBLE_API_URL}/verify_email`);
+    
     if (!res.ok) {
+      const errText = await res.text(); //
+      console.error("bubble error body:", errText);
       return NextResponse.json({ ok: "no", reason: "invalid_token" } satisfies VerifyEmailResponse);
     }
 
