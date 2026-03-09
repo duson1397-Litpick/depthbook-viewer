@@ -495,11 +495,11 @@ function VPageContent() {
   if (viewState === "email_input") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4">
-        <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
-          <h2 className="mb-6 text-center text-xl font-semibold text-neutral-800">
+        <div className="w-full max-w-[480px] rounded-2xl bg-white p-10 shadow-lg">
+          <h2 className="mb-6 text-center text-xl font-bold text-neutral-800">
             이메일 인증
           </h2>
-          <p className="mb-6 text-center text-sm text-neutral-600">
+          <p className="mb-6 text-center text-sm leading-relaxed text-[#4B5563]">
             초대받은 이메일 주소를 입력해주세요
           </p>
           <div className="space-y-4">
@@ -510,7 +510,7 @@ function VPageContent() {
               onKeyDown={(e) => e.key === "Enter" && !emailVerifying && handleEmailVerify()}
               placeholder="example@email.com"
               disabled={emailVerifying}
-              className="w-full rounded-lg border border-neutral-300 px-4 py-3 text-sm placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-200 disabled:bg-neutral-100"
+              className="h-12 w-full rounded-lg border border-neutral-300 px-4 text-[15px] placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-200 disabled:bg-neutral-100"
             />
             {emailError && (
               <p className="text-sm text-red-600">{emailError}</p>
@@ -519,7 +519,7 @@ function VPageContent() {
               type="button"
               onClick={handleEmailVerify}
               disabled={emailVerifying}
-              className="w-full rounded-lg bg-neutral-800 py-3 text-sm font-medium text-white hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="h-12 w-full rounded-lg bg-neutral-800 text-[15px] font-medium text-white hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {emailVerifying ? "확인 중..." : "확인"}
             </button>
@@ -532,19 +532,19 @@ function VPageContent() {
   if (viewState === "copyright_warning") {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-        <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
-          <h2 className="mb-4 text-center text-xl font-semibold text-neutral-800">
+        <div className="w-full max-w-[480px] rounded-2xl bg-white p-10 shadow-xl">
+          <h2 className="mb-4 text-center text-xl font-bold text-neutral-800">
             저작권 안내
           </h2>
-          <div className="mb-6 space-y-3 text-sm text-neutral-700">
-            <p>
+          <div className="mb-6">
+            <div className="rounded-lg border border-[#FED7AA] bg-[#FFF7ED] p-4 text-[13px] leading-[1.7] text-neutral-700">
               이 파일은 출판 전 검토용으로만 제공됩니다. 무단 복제, 배포, 캡처를 금지합니다. 저작권법에 따라 법적 책임이 따를 수 있습니다.
-            </p>
+            </div>
           </div>
           <button
             type="button"
             onClick={() => setViewState("viewer")}
-            className="w-full rounded-lg bg-neutral-800 py-2.5 text-sm font-medium text-white hover:bg-neutral-700"
+            className="h-12 w-full rounded-lg bg-neutral-800 text-[15px] font-medium text-white hover:bg-neutral-700"
           >
             확인
           </button>
@@ -566,7 +566,7 @@ function VPageContent() {
             <button
               type="button"
               onClick={() => renditionRef.current?.prev()}
-              className="flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-100 text-base font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95"
+              className="flex h-9 items-center justify-center rounded-lg bg-neutral-100 px-4 text-[13px] font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95"
               aria-label="이전 페이지"
             >
               ◀
@@ -574,7 +574,7 @@ function VPageContent() {
             <button
               type="button"
               onClick={() => renditionRef.current?.next()}
-              className="flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-100 text-base font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95"
+              className="flex h-9 items-center justify-center rounded-lg bg-neutral-100 px-4 text-[13px] font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95"
               aria-label="다음 페이지"
             >
               ▶
@@ -586,7 +586,7 @@ function VPageContent() {
             <button
               type="button"
               onClick={() => setTocOpen((o) => !o)}
-              className="flex h-10 items-center justify-center rounded-lg bg-neutral-100 px-4 text-sm font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95"
+              className="flex h-9 items-center justify-center rounded-lg bg-neutral-100 px-4 text-[13px] font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95"
             >
               목차
             </button>
@@ -600,7 +600,7 @@ function VPageContent() {
                 renditionRef.current?.themes.fontSize(`${newVal}%`);
               }}
               disabled={epubFontScale <= FONT_SCALE_STEPS[0]}
-              className="flex h-10 items-center justify-center rounded-lg bg-neutral-100 px-4 text-sm font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95 disabled:active:scale-100 disabled:opacity-50 disabled:hover:bg-neutral-100"
+              className="flex h-8 w-8 items-center justify-center rounded-md bg-neutral-100 text-[13px] font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95 disabled:active:scale-100 disabled:opacity-50 disabled:hover:bg-neutral-100"
             >
               A-
             </button>
@@ -614,7 +614,7 @@ function VPageContent() {
                 renditionRef.current?.themes.fontSize(`${newVal}%`);
               }}
               disabled={epubFontScale >= FONT_SCALE_STEPS[FONT_SCALE_STEPS.length - 1]}
-              className="flex h-10 items-center justify-center rounded-lg bg-neutral-100 px-4 text-sm font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95 disabled:active:scale-100 disabled:opacity-50 disabled:hover:bg-neutral-100"
+              className="flex h-8 w-8 items-center justify-center rounded-md bg-neutral-100 text-[13px] font-medium text-neutral-700 transition-transform hover:bg-neutral-200 active:scale-95 disabled:active:scale-100 disabled:opacity-50 disabled:hover:bg-neutral-100"
             >
               A+
             </button>
@@ -810,20 +810,20 @@ function VPageContent() {
       {/* 설문 모달 (스크롤 90% 이상 시 1회만) */}
       {surveyModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+          <div className="w-full max-w-[600px] rounded-2xl bg-white p-10 shadow-xl">
             <h2 className="mb-6 text-center text-xl font-semibold text-neutral-800">
               읽어주셔서 감사합니다 🙏
             </h2>
             <div className="space-y-5">
               <div>
-                <p className="mb-2 text-sm font-medium text-neutral-700">별점 (1–5)</p>
+                <p className="mb-2 text-base font-semibold text-neutral-700">별점 (1–5)</p>
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((n) => (
                     <button
                       key={n}
                       type="button"
                       onClick={() => setSurveyForm((f) => ({ ...f, satisfaction: n }))}
-                      className={`rounded p-1.5 text-xl transition ${
+                      className={`h-9 rounded-md px-3.5 text-[13px] transition ${
                         surveyForm.satisfaction >= n
                           ? "text-amber-400"
                           : "text-neutral-300 hover:text-amber-200"
@@ -836,33 +836,33 @@ function VPageContent() {
                 </div>
               </div>
               <div>
-                <p className="mb-2 text-sm font-medium text-neutral-700">한줄평</p>
+                <p className="mb-2 text-[13px] text-[#6B7280]">한줄평</p>
                 <textarea
                   value={surveyForm.one_liner}
                   onChange={(e) => setSurveyForm((f) => ({ ...f, one_liner: e.target.value }))}
                   placeholder="한줄평을 입력해 주세요"
                   rows={2}
-                  className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
+                  className="min-h-[100px] w-full rounded-lg border border-neutral-300 px-4 py-3 text-sm leading-relaxed placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
                 />
               </div>
               <div>
-                <p className="mb-2 text-sm font-medium text-neutral-700">좋았던 점</p>
+                <p className="mb-2 text-[13px] text-[#6B7280]">좋았던 점</p>
                 <textarea
                   value={surveyForm.good_points}
                   onChange={(e) => setSurveyForm((f) => ({ ...f, good_points: e.target.value }))}
                   placeholder="좋았던 점을 입력해 주세요"
                   rows={3}
-                  className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
+                  className="min-h-[100px] w-full rounded-lg border border-neutral-300 px-4 py-3 text-sm leading-relaxed placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
                 />
               </div>
               <div>
-                <p className="mb-2 text-sm font-medium text-neutral-700">아쉬웠던 점</p>
+                <p className="mb-2 text-[13px] text-[#6B7280]">아쉬웠던 점</p>
                 <textarea
                   value={surveyForm.improvement_points}
                   onChange={(e) => setSurveyForm((f) => ({ ...f, improvement_points: e.target.value }))}
                   placeholder="아쉬웠던 점을 입력해 주세요"
                   rows={3}
-                  className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
+                  className="min-h-[100px] w-full rounded-lg border border-neutral-300 px-4 py-3 text-sm leading-relaxed placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
                 />
               </div>
             </div>
@@ -887,7 +887,7 @@ function VPageContent() {
                   // 제출 실패 시 모달 유지
                 }
               }}
-              className="mt-6 w-full rounded-lg bg-neutral-800 py-2.5 text-sm font-medium text-white hover:bg-neutral-700"
+              className="mt-6 h-12 w-full rounded-lg bg-neutral-800 text-[15px] font-medium text-white hover:bg-neutral-700"
             >
               제출
             </button>
